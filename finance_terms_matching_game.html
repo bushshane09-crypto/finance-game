@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Finance Match Game</title>
+<style>
+body { font-family: Arial, sans-serif; background:#0f172a; color:white; text-align:center; }
+h1 { margin-top:20px; }
+.container { display:flex; justify-content:space-around; margin-top:30px; }
+.column { width:40%; }
+.card { background:#1e293b; margin:10px; padding:10px; border-radius:10px; cursor:pointer; }
+.card:hover { background:#334155; }
+.selected { background:#22c55e !important; }
+.matched { background:#4ade80 !important; cursor:default; }
+#score { margin-top:20px; font-size:20px; }
+</style>
+</head>
+<body>
+<h1>Finance Match Game</h1>
+<p>Match the term with the correct definition!</p>
+<div id="score">Score: 0</div>
+<div class="container">
+<div class="column" id="terms"></div>
+<div class="column" id="definitions"></div>
+</div>
+
+<script>
+const data = [
+{term:"Real Assets", def:"Tangible physical assets with intrinsic value"},
+{term:"Abnormal Return", def:"Return not due to overall market movement"},
+{term:"ABS", def:"Investment backed by a pool of loans or debt"},
+{term:"Absolute Priority", def:"Senior creditors paid before junior ones"},
+{term:"Accounts Payable", def:"Money owed to suppliers"},
+{term:"Accounts Receivable", def:"Money owed by customers"},
+{term:"Accrued Interest", def:"Interest earned but not yet paid"},
+{term:"ACH", def:"Electronic system for transferring money between banks"},
+{term:"Acid Test Ratio", def:"Measures ability to pay short-term liabilities quickly"}
+];
+
+let score = 0;
+let selectedTerm = null;
+
+const termsDiv = document.getElementById("terms");
+const defsDiv = document.getElementById("definitions");
+
+function shuffle(array) {
+  return array.sort(() => Math.random() - 0.5);
+}
+
+function createGame() {
+  const shuffledTerms = shuffle([...data]);
+  const shuffledDefs = shuffle([...data]);
+
+  shuffledTerms.forEach(item => {
+    const div = document.createElement("div");
+    div.className = "card";
+    div.textContent = item.term;
+    div.onclick = () => selectTerm(div, item);
+    termsDiv.appendChild(div);
+  });
+
+  shuffledDefs.forEach(item => {
+    const div = document.createElement("div");
+    div.className = "card";
+    div.textContent = item.def;
+    div.onclick = () => matchDef(div, item);
+    defsDiv.appendChild(div);
+  });
+}
+
+function selectTerm(element, item) {
+  if (element.classList.contains("matched")) return;
+
+  document.querySelectorAll("#terms .card").forEach(c => c.classList.remove("selected"));
+  element.classList.add("selected");
+  selectedTerm = {element, item};
+}
+
+function matchDef(element, item) {
+  if (!selectedTerm || element.classList.contains("matched")) return;
+
+  if (selectedTerm.item.term === item.term) {
+    element.classList.add("matched");
+    selectedTerm.element.classList.add("matched");
+    score += 10;
+  } else {
+    score -= 5;
+    alert("Wrong match!");
+  }
+
+  selectedTerm.element.classList.remove("selected");
+  selectedTerm = null;
+  document.getElementById("score").textContent = "Score: " + score;
+}
+
+createGame();
+</script>
+</body>
+</html>
